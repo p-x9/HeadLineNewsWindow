@@ -41,7 +41,7 @@ class SpringBoard_Hook: ClassHook<SpringBoard> {
         newsWindow.isHidden = false
         newsWindow.makeKeyAndVisible()
         
-        let gesture = UITapGestureRecognizer(target: UIApplication.shared, action: Selector("tapped"))
+        let gesture = UITapGestureRecognizer(target: UIApplication.shared, action: #selector(tapped))
         newsWindow.addGestureRecognizer(gesture)
     }
     
