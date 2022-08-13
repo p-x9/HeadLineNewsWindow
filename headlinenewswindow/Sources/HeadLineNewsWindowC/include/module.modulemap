@@ -1,0 +1,4 @@
+module HeadLineNewsWindowC {
+    umbrella "."
+    export *
+}

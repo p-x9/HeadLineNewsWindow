@@ -17,3 +17,5 @@ HeadlineNewsWindow_SWIFTFLAGS = -ISources/HeadlineNewsWindowC/include
 HeadlineNewsWindow_CFLAGS = -fobjc-arc -ISources/HeadlineNewsWindowC/include
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+SUBPROJECTS += headlinenewswindow
+include $(THEOS_MAKE_PATH)/aggregate.mk
