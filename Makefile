@@ -15,6 +15,8 @@ TWEAK_NAME = HeadlineNewsWindow
 HeadlineNewsWindow_FILES = $(shell find Sources/HeadlineNewsWindow -name '*.swift') $(shell find Sources/HeadlineNewsWindowC -name '*.m' -o -name '*.c' -o -name '*.mm' -o -name '*.cpp')
 HeadlineNewsWindow_SWIFTFLAGS = -ISources/HeadlineNewsWindowC/include
 HeadlineNewsWindow_CFLAGS = -fobjc-arc -ISources/HeadlineNewsWindowC/include
+$(TWEAK_NAME)_FRAMEWORKS = UIKit QuartzCore
+$(TWEAK_NAME)_LIBRARIES = sparkcolourpicker
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 SUBPROJECTS += headlinenewswindow

@@ -2,8 +2,13 @@ import Orion
 import HeadlineNewsWindowC
 import UIKit
 
+var localSettings = Settings()
+
+struct tweak: HookGroup {}
 
 class SpringBoard_Hook: ClassHook<SpringBoard> {
+    typealias Group = tweak
+    
     @Property(.nonatomic, .retain) var headlineNewsView: HeadLineNewsView? = nil
     @Property(.nonatomic, .retain) var newsWindow: UIWindow? = nil
     @Property(.nonatomic, .retain) var parser: RSSParser? = nil
@@ -35,9 +40,12 @@ class SpringBoard_Hook: ClassHook<SpringBoard> {
         
         newsWindow.addSubview(headlineNewsView)
         headlineNewsView.frame = newsWindow.bounds
-        headlineNewsView.speed = 0.5
         
-        newsWindow.backgroundColor = .red
+        headlineNewsView.speed = localSettings.textSpeed
+        headlineNewsView.backgroundColor = localSettings.backgroundColor
+        headlineNewsView.font = .systemFont(ofSize: localSettings.fontSize)
+        headlineNewsView.textColor = localSettings.textColor
+        
         newsWindow.isHidden = false
         newsWindow.makeKeyAndVisible()
         
@@ -55,8 +63,48 @@ class SpringBoard_Hook: ClassHook<SpringBoard> {
         if headlineNewsView.isRunning {
             headlineNewsView.stopAnimation()
         } else {
-            let items = parser.parse(with: URL(string: "https://rss.itmedia.co.jp/rss/2.0/itmedia_all.xml")!) as! [Item]
+            
+            let items = parser.parse(with: localSettings.rssURLs) as! [Item]
             headlineNewsView.startAnimating(with: items)
         }
+    }
+}
+
+func readPrefs() {
+    let path = "/var/mobile/Library/Preferences/com.p-x9.headlinenewswindow.pref.plist"
+    let url = URL(fileURLWithPath: path)
+    
+    //Reading values
+    guard let data = try? Data(contentsOf: url) else {
+        return
+    }
+    let decoder = PropertyListDecoder()
+    localSettings =  (try? decoder.decode(Settings.self, from: data)) ?? Settings()
+}
+
+func settingChanged() {
+    readPrefs()
+}
+
+func observePrefsChange() {
+    let NOTIFY = "com.p-x9.headlinenewswindow.prefschanged" as CFString
+
+    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
+                                    nil, { _, _, _, _, _ in
+        settingChanged()
+    }, NOTIFY, nil, CFNotificationSuspensionBehavior.deliverImmediately)
+}
+
+
+struct CCAnimator: Tweak {
+    init() {
+        readPrefs()
+        observePrefsChange()
+        
+        guard localSettings.isTweakEnabled else {
+            return
+        }
+        
+        tweak().activate()
     }
 }
