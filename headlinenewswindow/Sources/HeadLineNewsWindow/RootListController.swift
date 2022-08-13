@@ -55,7 +55,7 @@ class RootListController: PSListController {
     }
     
     @objc
-    func twitter() {
+    func openTwitter() {
         UIApplication.shared.open(URL(string: "https://mobile.twitter.com/p_x9")!)
     }
 }
